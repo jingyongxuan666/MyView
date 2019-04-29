@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -17,36 +17,11 @@
 
         <com.jyx.myimageview.MultiChosenImageView
             android:id="@+id/multiChosenImageView"
-            android:layout_width="0dp"
-            android:layout_height="62dp"
+            android:layout_width="62dp"
+            android:layout_height="100dp"
             app:choseFrom="gallery"
             app:choseType="image"
-            app:shapeMode="equalsWidth"
-            app:limitedSize="10"
-            android:layout_weight="1"/>
-        <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView2"
-            android:layout_width="0dp"
-            android:layout_height="62dp"
-            app:choseFrom="gallery"
-            app:choseType="image"
-            app:limitedSize="10"
-            android:layout_weight="1"/>
-        <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView3"
-            android:layout_width="0dp"
-            android:layout_height="62dp"
-            app:choseFrom="gallery"
-            app:choseType="image"
-            app:limitedSize="10"
-            android:layout_weight="1"/>
-        <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView4"
-            android:layout_width="0dp"
-            android:layout_height="62dp"
-            app:choseFrom="gallery"
-            app:choseType="video"
-            android:layout_weight="1"/>
+            app:limitedSize="10"/>
     </LinearLayout>
 
 
