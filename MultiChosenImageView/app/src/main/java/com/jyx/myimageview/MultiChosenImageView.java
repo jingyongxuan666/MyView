@@ -1,13 +1,29 @@
 package com.jyx.myimageview;
 
+import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+
+import java.io.File;
 
 /**
  * 自定义ImageView，可选择相册里的图片或视频，并展示，视频展示第一帧.
@@ -15,7 +31,12 @@ import android.widget.RelativeLayout;
  * @author Jingyongxuan
  * @date 2019/4/29
  */
-public class MultiChosenImageView extends RelativeLayout {
+public class MultiChosenImageView extends RelativeLayout implements View.OnClickListener {
+
+    private Context mContext;
+
+    public static final int REQUEST_CODE_IMAGE = 100;
+    public static final int REQUEST_CODE_VIDEO = 200;
 
     /**
      * 宽高模式
@@ -57,7 +78,7 @@ public class MultiChosenImageView extends RelativeLayout {
     private String choseFrom;
 
     /**
-     * 是否显示删除图标，默认显示
+     * 是否显示删除图标，默认不显示
      */
     private boolean deletable;
 
@@ -79,6 +100,14 @@ public class MultiChosenImageView extends RelativeLayout {
      */
     private int limitedSize;
 
+    private Uri mUri;
+
+    private String filePath;
+
+    private int REQUEST_CODE;
+
+    private String realFrom;
+
 
     public MultiChosenImageView(Context context) {
         super(context);
@@ -90,6 +119,7 @@ public class MultiChosenImageView extends RelativeLayout {
 
     public MultiChosenImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        mContext = context;
         //绑定view
         LayoutInflater.from(context).inflate(R.layout.muti_chosen_image_view, this, true);
         ivMain = findViewById(R.id.iv_main);
@@ -107,7 +137,7 @@ public class MultiChosenImageView extends RelativeLayout {
 
         choseFrom = attribute.getString(R.styleable.MultiChosenImageView_choseFrom);
 
-        deletable = attribute.getBoolean(R.styleable.MultiChosenImageView_deletable, true);
+        deletable = attribute.getBoolean(R.styleable.MultiChosenImageView_deletable, false);
 
         defaultImage = attribute.getDrawable(R.styleable.MultiChosenImageView_defaultImage);
 
@@ -118,6 +148,13 @@ public class MultiChosenImageView extends RelativeLayout {
         resize(shapeMode);
 
 
+        ivDelete.setOnClickListener(this);
+        ivPlay.setOnClickListener(this);
+
+    }
+
+    public void setOnClickListener(OnClickListener onClickListener){
+        ivMain.setOnClickListener(onClickListener);
     }
 
     /**
@@ -130,8 +167,21 @@ public class MultiChosenImageView extends RelativeLayout {
         if (choseType == null)//默认选择图片
             choseType = CHOSE_TYPE_IMAGE;
 
+        if (choseType.equals(CHOSE_TYPE_VIDEO))
+            ivMain.setImageResource(R.drawable.video_upload);
+
         if (choseFrom == null)//默认从相册选择
             choseFrom = CHOSE_FROM_GALLERY;
+
+//        if (deletable){//是否可删除
+//            ivDelete.setVisibility(VISIBLE);
+//        }else {
+//            ivDelete.setVisibility(GONE);
+//        }
+
+        if (defaultImage !=null){//设置默认图片
+            ivMain.setImageDrawable(defaultImage);
+        }
 
     }
 
@@ -173,5 +223,194 @@ public class MultiChosenImageView extends RelativeLayout {
 
 
     }
+
+    @Override//点击事件处理
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.iv_main:
+
+
+                break;
+            case R.id.iv_delete:
+                break;
+            case R.id.iv_play:
+                break;
+        }
+    }
+
+    /**
+     *
+     * 主图片点击，选择图片或视频
+     * @param
+     * @param
+     */
+    public void choseFile(int requestCode) {
+        REQUEST_CODE = requestCode;
+        if (choseFrom.equals(CHOSE_FROM_CAMERA)){//打开相机
+            openCamera();
+        }else if (choseFrom.equals(CHOSE_FROM_GALLERY)){//打开图库
+            openGallery();
+        }else{//显示dialog，来选择图库或相机
+            new AlertDialog.Builder(mContext)
+                    .setTitle("请选择")
+                    .setItems(new String[]{"相机","图库"}, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switch (which){
+                                case 0:
+                                    openCamera();
+                                    break;
+                                case 1:
+                                    openGallery();
+                                    break;
+                            }
+                        }
+                    }).create().show();
+        }
+
+
+    }
+    /**
+     * 从相册获取
+     */
+    private void openGallery() {
+        realFrom = CHOSE_FROM_GALLERY;
+        Uri type;
+        int requestCode;
+        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+            type = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        }else {
+            type = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        }
+        Intent cIntent = new Intent(Intent.ACTION_PICK,type);
+        ((Activity)mContext).startActivityForResult(cIntent,REQUEST_CODE);
+    }
+
+    /**
+     * 打开相机
+     */
+    private void openCamera() {
+        realFrom = CHOSE_FROM_CAMERA;
+        String path = mContext.getFilesDir() + File.separator + "media" + File.separator;
+        String type;
+        int requestCode;
+        File file;
+        long time = System.currentTimeMillis();
+        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+            type = MediaStore.ACTION_VIDEO_CAPTURE;
+            file = new File(path,time+".mp4");
+            filePath = path + time + ".mp4";
+        }else {
+            type = MediaStore.ACTION_IMAGE_CAPTURE;
+            file = new File(path,time+".jpg");
+            filePath = path + time + ".jpg";
+        }
+
+        if (!file.getParentFile().exists()){
+            file.getParentFile().mkdirs();
+        }
+
+        mUri = FileProvider.getUriForFile(mContext,mContext.getApplicationContext().getPackageName()+".fileprovider",file);
+
+
+        Intent cIntent = new Intent(type);
+        cIntent.putExtra(MediaStore.EXTRA_OUTPUT,mUri);
+        ((Activity)mContext).startActivityForResult(cIntent,REQUEST_CODE);
+    }
+
+    public void handleData(int requestCode,Intent data){
+
+        if (requestCode != REQUEST_CODE){
+            return;
+        }
+        if (realFrom.equals(CHOSE_FROM_CAMERA)){
+            Bitmap thumbnail;
+            if (data != null){
+                thumbnail = getVideoThumbnail(filePath,100,100, MediaStore.Images.Thumbnails.MICRO_KIND);
+            }else {
+                thumbnail = BitmapFactory.decodeFile(filePath);
+            }
+            ivMain.setImageBitmap(thumbnail);
+        }else {
+            String path = getRealPathFromUriAboveApi19(mContext,data.getData());
+            Bitmap bitmap = BitmapFactory.decodeFile(path);
+            ivMain.setImageBitmap(bitmap);
+        }
+
+    }
+
+    /**
+     * 获取视频缩略图
+     * @param videoPath
+     * @param width
+     * @param height
+     * @param kind
+     * @return
+     */
+    private Bitmap getVideoThumbnail(String videoPath, int width, int height,
+                                     int kind) {
+        Bitmap bitmap = null;
+        // 获取视频的缩略图
+        bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
+//        System.out.println("w"+bitmap.getWidth());
+//        System.out.println("h"+bitmap.getHeight());
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
+                ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        return bitmap;
+    }
+
+    private static String getRealPathFromUriAboveApi19(Context context, Uri uri) {
+        String filePath = null;
+        if (DocumentsContract.isDocumentUri(context, uri)) {
+            // 如果是document类型的 uri, 则通过document id来进行处理
+            String documentId = DocumentsContract.getDocumentId(uri);
+            if (isMediaDocument(uri)) { // MediaProvider
+                // 使用':'分割
+                String id = documentId.split(":")[1];
+
+                String selection = MediaStore.Images.Media._ID + "=?";
+                String[] selectionArgs = {id};
+                filePath = getDataColumn(context, MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection, selectionArgs);
+            } else if (isDownloadsDocument(uri)) { // DownloadsProvider
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(documentId));
+                filePath = getDataColumn(context, contentUri, null, null);
+            }
+        } else if ("content".equalsIgnoreCase(uri.getScheme())){
+            // 如果是 content 类型的 Uri
+            filePath = getDataColumn(context, uri, null, null);
+        } else if ("file".equals(uri.getScheme())) {
+            // 如果是 file 类型的 Uri,直接获取图片对应的路径
+            filePath = uri.getPath();
+        }
+        return filePath;
+    }
+    private static String getDataColumn(Context context, Uri uri, String selection, String[] selectionArgs) {
+        String path = null;
+
+        String[] projection = new String[]{MediaStore.Images.Media.DATA};
+        Cursor cursor = null;
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                int columnIndex = cursor.getColumnIndexOrThrow(projection[0]);
+                path = cursor.getString(columnIndex);
+            }
+        } catch (Exception e) {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+        return path;
+    }
+    private static boolean isDownloadsDocument(Uri uri) {
+        return "com.android.providers.downloads.documents".equals(uri.getAuthority());
+    }
+    private static boolean isMediaDocument(Uri uri) {
+        return "com.android.providers.media.documents".equals(uri.getAuthority());
+    }
+
+
+
+
 
 }

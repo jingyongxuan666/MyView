@@ -17,7 +17,7 @@
             <!--以上两者-->
             <enum name="both" value="2"/>
         </attr>
-        <!--是否可删除，也就是右上角删除按钮,默认可删除-->
+        <!--是否可删除，也就是右上角删除按钮,默认不可删除-->
         <attr name="deletable" format="boolean"/>
         <!--默认‘上传图片’图片，默认自带-->
         <attr name="defaultImage" format="reference"/>

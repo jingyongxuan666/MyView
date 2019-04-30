@@ -21,6 +21,44 @@
             android:layout_height="100dp"
             app:choseFrom="gallery"
             app:choseType="image"
+            app:deletable="true"
+            app:shapeMode="equalsWidth"
+            app:limitedSize="10"/>
+        <com.jyx.myimageview.MultiChosenImageView
+            android:id="@+id/multiChosenImageView1"
+            android:layout_width="62dp"
+            android:layout_height="100dp"
+            app:choseFrom="camera"
+            app:choseType="image"
+            app:deletable="true"
+            app:shapeMode="equalsWidth"
+            app:limitedSize="10"/>
+        <com.jyx.myimageview.MultiChosenImageView
+            android:id="@+id/multiChosenImageView3"
+            android:layout_width="62dp"
+            android:layout_height="100dp"
+            app:choseFrom="camera"
+            app:choseType="video"
+            app:deletable="true"
+            app:shapeMode="equalsWidth"
+            app:limitedSize="10"/>
+        <com.jyx.myimageview.MultiChosenImageView
+            android:id="@+id/multiChosenImageView4"
+            android:layout_width="62dp"
+            android:layout_height="100dp"
+            app:choseFrom="gallery"
+            app:choseType="video"
+            app:deletable="true"
+            app:shapeMode="equalsWidth"
+            app:limitedSize="10"/>
+        <com.jyx.myimageview.MultiChosenImageView
+            android:id="@+id/multiChosenImageView5"
+            android:layout_width="62dp"
+            android:layout_height="100dp"
+            app:choseFrom="both"
+            app:choseType="video"
+            app:deletable="true"
+            app:shapeMode="equalsWidth"
             app:limitedSize="10"/>
     </LinearLayout>
 
