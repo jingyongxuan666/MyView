@@ -16,6 +16,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
@@ -24,11 +25,18 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_CODE = 100;
+
+    private static final int REQUEST_CODE1 = 100;
+    private static final int REQUEST_CODE2 = 200;
+    private static final int REQUEST_CODE3 = 300;
+
     private Context mContext;
 
     private MultiChosenImageView iv1;
     private MultiChosenImageView iv2;
     private MultiChosenImageView iv3;
+
+    private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         iv1 = findViewById(R.id.multiChosenImageView3);
         iv2 = findViewById(R.id.multiChosenImageView);
         iv3 = findViewById(R.id.multiChosenImageView1);
+
+        button = findViewById(R.id.button);
         if (!checkPermission()){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions();
@@ -45,20 +55,29 @@ public class MainActivity extends AppCompatActivity {
         iv1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                iv1.choseFile(100);
+                iv1.choseFile(REQUEST_CODE1);
             }
         });
 
         iv2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                iv2.choseFile(200);
+                iv2.choseFile(REQUEST_CODE2);
             }
         });
         iv3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                iv3.choseFile(300);
+                iv3.choseFile(REQUEST_CODE3);
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File file1 = iv1.getFile();
+                File file2 = iv2.getFile();
+                File file3 = iv3.getFile();
             }
         });
 
@@ -136,8 +155,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        iv1.handleData(requestCode,data);
-        iv2.handleData(requestCode,data);
-        iv3.handleData(requestCode,data);
+        if(resultCode == RESULT_OK){
+            switch (requestCode){
+                case REQUEST_CODE1:
+                    iv1.handleData(data);
+                    break;
+                case REQUEST_CODE2:
+                    iv2.handleData(data);
+                    break;
+                case REQUEST_CODE3:
+                    iv3.handleData(data);
+                    break;
+            }
+        }
+
     }
 }

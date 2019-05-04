@@ -31,12 +31,9 @@ import java.io.File;
  * @author Jingyongxuan
  * @date 2019/4/29
  */
-public class MultiChosenImageView extends RelativeLayout implements View.OnClickListener {
+public class MultiChosenImageView extends RelativeLayout {
 
     private Context mContext;
-
-    public static final int REQUEST_CODE_IMAGE = 100;
-    public static final int REQUEST_CODE_VIDEO = 200;
 
     /**
      * 宽高模式
@@ -100,13 +97,15 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
      */
     private int limitedSize;
 
-    private Uri mUri;
+    private Uri DATA_URI;
 
-    private String filePath;
+    private String FILE_PATH;
 
     private int REQUEST_CODE;
 
-    private String realFrom;
+    private String REAL_FROM;
+
+    private File FILE;
 
 
     public MultiChosenImageView(Context context) {
@@ -123,7 +122,7 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
         //绑定view
         LayoutInflater.from(context).inflate(R.layout.muti_chosen_image_view, this, true);
         ivMain = findViewById(R.id.iv_main);
-        ivPlay = findViewById(R.id.iv_play);
+//        ivPlay = findViewById(R.id.iv_play);
         ivDelete = findViewById(R.id.iv_delete);
         rlBack = findViewById(R.id.rl_back);
 
@@ -148,13 +147,23 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
         resize(shapeMode);
 
 
-        ivDelete.setOnClickListener(this);
-        ivPlay.setOnClickListener(this);
+
 
     }
 
     public void setOnClickListener(OnClickListener onClickListener){
         ivMain.setOnClickListener(onClickListener);
+    }
+
+    public void setOnDeleteIconClickListener(OnClickListener onClickListener){
+        resetView();
+        ivDelete.setOnClickListener(onClickListener);
+    }
+
+    private void resetView() {
+        FILE = null;
+        FILE_PATH = null;
+        ivMain.setImageDrawable(defaultImage);
     }
 
     /**
@@ -173,14 +182,12 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
         if (choseFrom == null)//默认从相册选择
             choseFrom = CHOSE_FROM_GALLERY;
 
-//        if (deletable){//是否可删除
-//            ivDelete.setVisibility(VISIBLE);
-//        }else {
-//            ivDelete.setVisibility(GONE);
-//        }
 
-        if (defaultImage !=null){//设置默认图片
+        if (defaultImage != null){//设置默认图片
             ivMain.setImageDrawable(defaultImage);
+        }else {
+            int imageId = choseType.equals(CHOSE_TYPE_VIDEO)?R.drawable.video_upload:R.drawable.image_upload;
+            defaultImage = mContext.getResources().getDrawable(imageId);
         }
 
     }
@@ -224,20 +231,6 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
 
     }
 
-    @Override//点击事件处理
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.iv_main:
-
-
-                break;
-            case R.id.iv_delete:
-                break;
-            case R.id.iv_play:
-                break;
-        }
-    }
-
     /**
      *
      * 主图片点击，选择图片或视频
@@ -274,7 +267,7 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
      * 从相册获取
      */
     private void openGallery() {
-        realFrom = CHOSE_FROM_GALLERY;
+        REAL_FROM = CHOSE_FROM_GALLERY;
         Uri type;
         int requestCode;
         if (choseType.equals(CHOSE_TYPE_VIDEO)){
@@ -290,7 +283,7 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
      * 打开相机
      */
     private void openCamera() {
-        realFrom = CHOSE_FROM_CAMERA;
+        REAL_FROM = CHOSE_FROM_CAMERA;
         String path = mContext.getFilesDir() + File.separator + "media" + File.separator;
         String type;
         int requestCode;
@@ -299,44 +292,67 @@ public class MultiChosenImageView extends RelativeLayout implements View.OnClick
         if (choseType.equals(CHOSE_TYPE_VIDEO)){
             type = MediaStore.ACTION_VIDEO_CAPTURE;
             file = new File(path,time+".mp4");
-            filePath = path + time + ".mp4";
+            FILE_PATH = path + time + ".mp4";
         }else {
             type = MediaStore.ACTION_IMAGE_CAPTURE;
             file = new File(path,time+".jpg");
-            filePath = path + time + ".jpg";
+            FILE_PATH = path + time + ".jpg";
         }
 
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdirs();
         }
 
-        mUri = FileProvider.getUriForFile(mContext,mContext.getApplicationContext().getPackageName()+".fileprovider",file);
+        DATA_URI = FileProvider.getUriForFile(mContext,mContext.getApplicationContext().getPackageName()+".fileprovider",file);
 
 
         Intent cIntent = new Intent(type);
-        cIntent.putExtra(MediaStore.EXTRA_OUTPUT,mUri);
+        cIntent.putExtra(MediaStore.EXTRA_OUTPUT,DATA_URI);
         ((Activity)mContext).startActivityForResult(cIntent,REQUEST_CODE);
     }
 
-    public void handleData(int requestCode,Intent data){
+    public void handleData(Intent data){
 
-        if (requestCode != REQUEST_CODE){
-            return;
-        }
-        if (realFrom.equals(CHOSE_FROM_CAMERA)){
-            Bitmap thumbnail;
-            if (data != null){
-                thumbnail = getVideoThumbnail(filePath,100,100, MediaStore.Images.Thumbnails.MICRO_KIND);
-            }else {
-                thumbnail = BitmapFactory.decodeFile(filePath);
-            }
-            ivMain.setImageBitmap(thumbnail);
+        FILE = null;
+        String path;
+        Bitmap thumbnail;
+
+        if (REAL_FROM.equals(CHOSE_FROM_CAMERA)){
+            //相机拍照返回的data有可能是null，所以使用全局的FILE_PATH
+            path = FILE_PATH;
         }else {
-            String path = getRealPathFromUriAboveApi19(mContext,data.getData());
-            Bitmap bitmap = BitmapFactory.decodeFile(path);
-            ivMain.setImageBitmap(bitmap);
+            //通过uri获取文件路径
+            path = getRealPathFromUriAboveApi19(mContext,data.getData());
+        }
+        FILE = new File(path);
+
+        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+            thumbnail = getVideoThumbnail(path,100,100, MediaStore.Images.Thumbnails.MICRO_KIND);
+        }else {
+            thumbnail = BitmapFactory.decodeFile(path);
+        }
+        ivMain.setImageBitmap(thumbnail);
+
+        //如果是视频，显示蒙版和播放键，否则隐藏
+        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+            rlBack.setVisibility(VISIBLE);
+        }else {
+            rlBack.setVisibility(GONE);
+        }
+        //是否显示删除icon
+        if (deletable){
+            ivDelete.setVisibility(VISIBLE);
+        }else {
+            ivDelete.setVisibility(GONE);
         }
 
+    }
+
+    /**
+     * @return 获取图片或视频文件
+     */
+    public File getFile(){
+        return FILE;
     }
 
     /**
