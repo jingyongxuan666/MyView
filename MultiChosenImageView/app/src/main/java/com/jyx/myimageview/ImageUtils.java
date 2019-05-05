@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
+import android.media.ThumbnailUtils;
 
 import java.io.IOException;
 
@@ -88,5 +89,22 @@ public class ImageUtils {
             bitmap.recycle();
         }
         return returnBm;
+    }
+
+    /**
+     * 获取视频缩略图
+     * @param videoPath 视频路径
+     * @param width 宽度
+     * @param height 高度
+     * @param kind 类型
+     * @return
+     */
+    public static Bitmap getVideoThumbnail(String videoPath, int width, int height, int kind) {
+        Bitmap bitmap = null;
+        // 获取视频的缩略图
+        bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
+        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
+                ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        return bitmap;
     }
 }

@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import java.io.File;
@@ -29,12 +30,11 @@ public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_CODE1 = 100;
     private static final int REQUEST_CODE2 = 200;
     private static final int REQUEST_CODE3 = 300;
+    private static final int REQUEST_CODE4 = 400;
 
     private Context mContext;
 
     private MultiChosenImageView iv1;
-    private MultiChosenImageView iv2;
-    private MultiChosenImageView iv3;
 
     private Button button;
     @Override
@@ -42,9 +42,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
-        iv1 = findViewById(R.id.multiChosenImageView3);
-        iv2 = findViewById(R.id.multiChosenImageView);
-        iv3 = findViewById(R.id.multiChosenImageView1);
+        iv1 = findViewById(R.id.multiChosenImageView);
+
+        iv1.post(new Runnable() {
+            @Override
+            public void run() {
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(iv1.getWidth(),iv1.getWidth());
+                iv1.setLayoutParams(params);
+            }
+        });
+
 
         button = findViewById(R.id.button);
         if (!checkPermission()){
@@ -59,25 +66,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        iv2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iv2.choseFile(REQUEST_CODE2);
-            }
-        });
-        iv3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iv3.choseFile(REQUEST_CODE3);
-            }
-        });
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 File file1 = iv1.getFile();
-                File file2 = iv2.getFile();
-                File file3 = iv3.getFile();
             }
         });
 
@@ -90,14 +84,12 @@ public class MainActivity extends AppCompatActivity {
         ContentResolver contentResolver = context.getContentResolver();
         Cursor cursor = contentResolver.query(uri, null, null, null, null);
         if (cursor == null || cursor.getCount() <= 0) return null; // 没有图片
-        while (cursor.moveToNext())
-        {
+        while (cursor.moveToNext()) {
             int index = cursor
                     .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             String path = cursor.getString(index); // 文件地址
             File file = new File(path);
-            if (file.exists())
-            {
+            if (file.exists()){
                 result.add(path);
             }
         }
@@ -161,10 +153,10 @@ public class MainActivity extends AppCompatActivity {
                     iv1.handleData(data);
                     break;
                 case REQUEST_CODE2:
-                    iv2.handleData(data);
                     break;
                 case REQUEST_CODE3:
-                    iv3.handleData(data);
+                    break;
+                case REQUEST_CODE4:
                     break;
             }
         }

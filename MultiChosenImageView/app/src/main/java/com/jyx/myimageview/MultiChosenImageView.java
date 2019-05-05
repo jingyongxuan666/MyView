@@ -7,13 +7,13 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -30,6 +30,7 @@ import java.io.File;
 public class MultiChosenImageView extends RelativeLayout {
 
     private Context mContext;
+    private OnDeleteClickListener mOnDeleteListener;
 
     /**
      * 宽高模式
@@ -52,7 +53,7 @@ public class MultiChosenImageView extends RelativeLayout {
     public static final String CHOSE_FROM_BOTH = "2";//皆可
 
     //四面padding的尺寸
-    private static final int paddingSizeDp = 10;
+    private static final int PADDING_SIZE_DP = 10;
 
     private ImageView ivMain;
     private ImageView ivPlay;
@@ -140,9 +141,24 @@ public class MultiChosenImageView extends RelativeLayout {
 
         setDefaultValue();
 
-        resize(shapeMode);
+//        if (getVisibility() == VISIBLE){
+//            resize();
+//        }
 
 
+        ivDelete.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (deletable){
+                    resetView();
+                    if (mOnDeleteListener != null){
+                        mOnDeleteListener.deleteCallback(MultiChosenImageView.this);
+                    }
+                }else {
+                    throw new RuntimeException("'deletable' is not 'true'");
+                }
+            }
+        });
 
 
     }
@@ -151,16 +167,21 @@ public class MultiChosenImageView extends RelativeLayout {
         ivMain.setOnClickListener(onClickListener);
     }
 
-    public void setOnDeleteIconClickListener(OnClickListener onClickListener){
-        resetView();
-        ivDelete.setOnClickListener(onClickListener);
-    }
-
     private void resetView() {
         FILE = null;
         FILE_PATH = null;
         ivMain.setImageDrawable(defaultImage);
+        ivDelete.setVisibility(GONE);
+        rlBack.setVisibility(GONE);
     }
+
+    public void setOnDeleteClickListener(OnDeleteClickListener listener){
+        this.mOnDeleteListener = listener;
+    }
+    private interface OnDeleteClickListener{
+        void deleteCallback(View view);
+    }
+
 
     /**
      * 设置各属性默认值
@@ -188,18 +209,23 @@ public class MultiChosenImageView extends RelativeLayout {
 
     }
 
+    public void show(){
+        setVisibility(VISIBLE);
+        resize();
+    }
+
     /**
      * 重新调整大小
      *
-     * @param shapeMode
      */
-    private void resize(final String shapeMode) {
+    private void resize() {
 
 
-        final int paddingSizePx = DpPxUtils.dipToPx(paddingSizeDp);
+        final int paddingSizePx = DpPxUtils.dipToPx(PADDING_SIZE_DP);
         post(new Runnable() {
             @Override
             public void run() {
+
                 Class<? extends ViewGroup.LayoutParams> viewClass = getLayoutParams().getClass();
                 int width;
                 int height;
@@ -257,7 +283,6 @@ public class MultiChosenImageView extends RelativeLayout {
                     }).create().show();
         }
 
-
     }
     /**
      * 从相册获取
@@ -265,7 +290,6 @@ public class MultiChosenImageView extends RelativeLayout {
     private void openGallery() {
         REAL_FROM = CHOSE_FROM_GALLERY;
         Uri type;
-        int requestCode;
         if (choseType.equals(CHOSE_TYPE_VIDEO)){
             type = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         }else {
@@ -329,12 +353,10 @@ public class MultiChosenImageView extends RelativeLayout {
 
 
         if (choseType.equals(CHOSE_TYPE_VIDEO)){
-            thumbnail = getVideoThumbnail(path,100,100, MediaStore.Images.Thumbnails.MICRO_KIND);
+            thumbnail = ImageUtils.getVideoThumbnail(path,200,200, MediaStore.Images.Thumbnails.MICRO_KIND);
         }else {
             thumbnail = ImageUtils.returnRotatePhoto(path,mContext);
         }
-
-
 
         ivMain.setImageBitmap(thumbnail);
 
@@ -359,30 +381,4 @@ public class MultiChosenImageView extends RelativeLayout {
     public File getFile(){
         return FILE;
     }
-
-    /**
-     * 获取视频缩略图
-     * @param videoPath
-     * @param width
-     * @param height
-     * @param kind
-     * @return
-     */
-    private Bitmap getVideoThumbnail(String videoPath, int width, int height,
-                                     int kind) {
-        Bitmap bitmap = null;
-        // 获取视频的缩略图
-        bitmap = ThumbnailUtils.createVideoThumbnail(videoPath, kind);
-//        System.out.println("w"+bitmap.getWidth());
-//        System.out.println("h"+bitmap.getHeight());
-        bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
-                ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
-        return bitmap;
-    }
-
-
-
-
-
-
 }
