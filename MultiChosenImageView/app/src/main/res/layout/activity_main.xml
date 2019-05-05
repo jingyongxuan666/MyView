@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -19,63 +20,68 @@
 
         <com.jyx.myimageview.MultiChosenImageView
             android:id="@+id/multiChosenImageView"
-            android:layout_width="62dp"
+            android:layout_width="0dp"
             android:layout_height="100dp"
+            android:layout_weight="1"
             app:choseFrom="gallery"
             app:choseType="image"
             app:deletable="true"
             app:limitedSize="10"
-            app:shapeMode="equalsWidth" />
+            app:shapeMode="equalsWidth"/>
 
         <com.jyx.myimageview.MultiChosenImageView
             android:id="@+id/multiChosenImageView1"
-            android:layout_width="62dp"
+            android:layout_width="0dp"
             android:layout_height="100dp"
+            android:layout_weight="1"
             app:choseFrom="camera"
             app:choseType="image"
             app:deletable="true"
             app:limitedSize="10"
-            app:shapeMode="equalsWidth" />
+            app:shapeMode="equalsWidth"/>
 
         <com.jyx.myimageview.MultiChosenImageView
             android:id="@+id/multiChosenImageView3"
-            android:layout_width="62dp"
+            android:layout_width="0dp"
             android:layout_height="100dp"
+            android:layout_weight="1"
             app:choseFrom="gallery"
             app:choseType="video"
             app:deletable="true"
-            app:limitedSize="10"
-            app:shapeMode="equalsWidth" />
+            app:limitedSize="300"
+            app:shapeMode="equalsWidth"/>
 
         <com.jyx.myimageview.MultiChosenImageView
             android:id="@+id/multiChosenImageView4"
-            android:layout_width="62dp"
+            android:layout_width="0dp"
             android:layout_height="100dp"
+            android:layout_weight="1"
             app:choseFrom="gallery"
             app:choseType="video"
             app:deletable="true"
             app:limitedSize="10"
-            app:shapeMode="equalsWidth" />
+            app:shapeMode="equalsWidth"/>
 
         <com.jyx.myimageview.MultiChosenImageView
             android:id="@+id/multiChosenImageView5"
-            android:layout_width="62dp"
+            android:layout_width="0dp"
             android:layout_height="100dp"
+            android:layout_weight="1"
             app:choseFrom="both"
             app:choseType="video"
             app:deletable="true"
             app:limitedSize="10"
-            app:shapeMode="equalsWidth" />
+            app:shapeMode="equalsWidth"/>
     </LinearLayout>
 
     <Button
         android:id="@+id/button"
-        android:text="确定"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="确定"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"/>
 
 </android.support.constraint.ConstraintLayout>

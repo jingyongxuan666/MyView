@@ -6,7 +6,7 @@
         android:id="@+id/iv_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:layout_margin="@dimen/total_margin"
         android:src="@drawable/image_upload"
         android:contentDescription="@string/main_image"/>
