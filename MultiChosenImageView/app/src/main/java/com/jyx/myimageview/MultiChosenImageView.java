@@ -9,12 +9,12 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.DrawableRes;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -82,14 +82,6 @@ public class MultiChosenImageView extends RelativeLayout {
     private Drawable defaultImage;
 
     /**
-     * 宽高模式，
-     * normal指定宽高
-     * equalsWidth 等宽
-     * equalsHeight 等高
-     */
-    private String shapeMode;
-
-    /**
      * 上传限制
      */
     private int limitedSize;
@@ -106,7 +98,7 @@ public class MultiChosenImageView extends RelativeLayout {
 
 
     public MultiChosenImageView(Context context) {
-        super(context);
+        this(context,null);
     }
 
     public MultiChosenImageView(Context context, AttributeSet attrs) {
@@ -127,8 +119,6 @@ public class MultiChosenImageView extends RelativeLayout {
         //获取属性
         TypedArray attribute = context.obtainStyledAttributes(attrs, R.styleable.MultiChosenImageView);
 
-        shapeMode = attribute.getString(R.styleable.MultiChosenImageView_shapeMode);
-
         choseType = attribute.getString(R.styleable.MultiChosenImageView_choseType);
 
         choseFrom = attribute.getString(R.styleable.MultiChosenImageView_choseFrom);
@@ -141,30 +131,22 @@ public class MultiChosenImageView extends RelativeLayout {
 
         setDefaultValue();
 
-//        if (getVisibility() == VISIBLE){
-//            resize();
-//        }
-
-
         ivDelete.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (deletable){
-                    resetView();
-                    if (mOnDeleteListener != null){
-                        mOnDeleteListener.deleteCallback(MultiChosenImageView.this);
-                    }
-                }else {
-                    throw new RuntimeException("'deletable' is not 'true'");
+                if (mOnDeleteListener != null){
+                    mOnDeleteListener.deleteCallback(MultiChosenImageView.this);
                 }
+                resetView();
             }
         });
 
 
     }
 
-    public void setOnClickListener(OnClickListener onClickListener){
+    public MultiChosenImageView setOnImageClickListener(OnClickListener onClickListener){
         ivMain.setOnClickListener(onClickListener);
+        return this;
     }
 
     private void resetView() {
@@ -178,7 +160,7 @@ public class MultiChosenImageView extends RelativeLayout {
     public void setOnDeleteClickListener(OnDeleteClickListener listener){
         this.mOnDeleteListener = listener;
     }
-    private interface OnDeleteClickListener{
+    public interface OnDeleteClickListener{
         void deleteCallback(View view);
     }
 
@@ -187,18 +169,16 @@ public class MultiChosenImageView extends RelativeLayout {
      * 设置各属性默认值
      */
     private void setDefaultValue() {
-        if (shapeMode == null)//默认指定宽高
-            shapeMode = SHAPE_MODE_NORMAL;
-
         if (choseType == null)//默认选择图片
             choseType = CHOSE_TYPE_IMAGE;
 
         if (choseType.equals(CHOSE_TYPE_VIDEO))
             ivMain.setImageResource(R.drawable.video_upload);
 
-        if (choseFrom == null)//默认从相册选择
+        if (choseFrom == null){//默认从相册选择
             choseFrom = CHOSE_FROM_GALLERY;
-
+            REAL_FROM = CHOSE_FROM_GALLERY;
+        }
 
         if (defaultImage != null){//设置默认图片
             ivMain.setImageDrawable(defaultImage);
@@ -209,49 +189,33 @@ public class MultiChosenImageView extends RelativeLayout {
 
     }
 
-    public void show(){
-        setVisibility(VISIBLE);
-        resize();
+    public MultiChosenImageView setChoseType(String choseType){
+        this.choseType = choseType;
+        return this;
     }
 
-    /**
-     * 重新调整大小
-     *
-     */
-    private void resize() {
-
-
-        final int paddingSizePx = DpPxUtils.dipToPx(PADDING_SIZE_DP);
-        post(new Runnable() {
-            @Override
-            public void run() {
-
-                Class<? extends ViewGroup.LayoutParams> viewClass = getLayoutParams().getClass();
-                int width;
-                int height;
-                switch (shapeMode) {
-                    case SHAPE_MODE_EQUALS_WIDTH:
-                        height = width = getWidth();
-                        break;
-                    case SHAPE_MODE_EQUALS_HEIGHT:
-                        width = height = getHeight();
-                        break;
-                    default:
-                        width = getWidth() + paddingSizePx;
-                        height = getHeight() + paddingSizePx;
-                        break;
-                }
-
-                try {
-                    setLayoutParams(viewClass.getDeclaredConstructor(int.class,int.class).newInstance(width,height));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
+    public MultiChosenImageView setChoseFrom(String where){
+        this.choseFrom = where;
+        REAL_FROM = where;
+        return this;
     }
+
+    public MultiChosenImageView setDefaultImage(@DrawableRes int resourceId){
+        this.defaultImage = mContext.getResources().getDrawable(resourceId);
+        return this;
+    }
+
+    public MultiChosenImageView setDeletable(boolean canDelete){
+        this.deletable = canDelete;
+        return this;
+    }
+
+    public MultiChosenImageView setLimitedSize(int limitedSize){
+        this.limitedSize = limitedSize;
+        return this;
+    }
+
+
 
     /**
      *

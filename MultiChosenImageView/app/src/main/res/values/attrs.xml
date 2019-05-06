@@ -21,12 +21,6 @@
         <attr name="deletable" format="boolean"/>
         <!--默认‘上传图片’图片，默认自带-->
         <attr name="defaultImage" format="reference"/>
-        <!--边长模式，指定宽高，等宽正方形，等高正方形-->
-        <attr name="shapeMode" format="enum">
-            <enum name="normal" value="0"/>
-            <enum name="equalsWidth" value="1"/>
-            <enum name="equalsHeight" value="2"/>
-        </attr>
         <!--上传文件的大小限制，以Mb为单位-->
         <attr name="limitedSize" format="integer"/>
 

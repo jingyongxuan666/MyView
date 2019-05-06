@@ -27,42 +27,61 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSION_CODE = 100;
 
-    private static final int REQUEST_CODE1 = 100;
-    private static final int REQUEST_CODE2 = 200;
-    private static final int REQUEST_CODE3 = 300;
-    private static final int REQUEST_CODE4 = 400;
+    private static final int REQUEST_CODE_IMAGE = 100;
+    private static final int REQUEST_CODE_VIDEO = 200;
 
     private Context mContext;
 
-    private MultiChosenImageView iv1;
+    private MultiChosenImageView ivImg;
+    private MultiChosenImageView ivVideo;
+    private LinearLayout llImgWrapper;
+
+    private LinearLayout.LayoutParams params;
 
     private Button button;
+
+    private List<File> imageFiles;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
-        iv1 = findViewById(R.id.multiChosenImageView);
+        imageFiles = new ArrayList<>();
 
-        iv1.post(new Runnable() {
+        ivImg = findViewById(R.id.iv_img);
+        ivVideo = findViewById(R.id.iv_video);
+        llImgWrapper = findViewById(R.id.ll_img_wrapper);
+        button = findViewById(R.id.button);
+
+        ivImg.post(new Runnable() {
             @Override
             public void run() {
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(iv1.getWidth(),iv1.getWidth());
-                iv1.setLayoutParams(params);
+                params = new LinearLayout.LayoutParams(ivImg.getWidth(),ivImg.getWidth());
+                ivImg.setLayoutParams(params);
+                ivVideo.setLayoutParams(params);
             }
         });
 
 
-        button = findViewById(R.id.button);
+
         if (!checkPermission()){
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions();
             }
         }
-        iv1.setOnClickListener(new View.OnClickListener() {
+        ivImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                iv1.choseFile(REQUEST_CODE1);
+                ivImg.choseFile(REQUEST_CODE_IMAGE);
+            }
+        });
+
+        ivVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ivVideo.choseFile(REQUEST_CODE_VIDEO);
             }
         });
 
@@ -71,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                File file1 = iv1.getFile();
+                File file1 = ivImg.getFile();
             }
         });
 
@@ -149,17 +168,45 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK){
             switch (requestCode){
-                case REQUEST_CODE1:
-                    iv1.handleData(data);
+                case REQUEST_CODE_VIDEO:
+                    ivVideo.handleData(data);
                     break;
-                case REQUEST_CODE2:
-                    break;
-                case REQUEST_CODE3:
-                    break;
-                case REQUEST_CODE4:
+                case REQUEST_CODE_IMAGE:
+                    //创建新的view
+                    final MultiChosenImageView newImageView = new MultiChosenImageView(mContext);
+                    newImageView.setChoseType(MultiChosenImageView.CHOSE_TYPE_IMAGE)
+                            .setChoseFrom(MultiChosenImageView.CHOSE_FROM_GALLERY)
+                            .setDeletable(true)
+                            .setLimitedSize(10)
+                            .setOnImageClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+
+                                }
+                            }).setOnDeleteClickListener(new MultiChosenImageView.OnDeleteClickListener() {
+                                @Override
+                                public void deleteCallback(View view) {
+                                    llImgWrapper.removeView(newImageView);
+                                    if (newImageView.getFile() != null){
+                                        imageFiles.remove(newImageView.getFile());
+                                    }
+                                    if (imageFiles.size()<3){
+                                        ivImg.setVisibility(View.VISIBLE);
+                                    }
+                                }
+                            });
+                    newImageView.setLayoutParams(params);
+                    llImgWrapper.addView(newImageView);
+                    newImageView.handleData(data);
+                    imageFiles.add(newImageView.getFile());
+                    if (imageFiles.size() == 3) {
+                        ivImg.setVisibility(View.GONE);
+                    }
                     break;
             }
         }
 
     }
+
+
 }

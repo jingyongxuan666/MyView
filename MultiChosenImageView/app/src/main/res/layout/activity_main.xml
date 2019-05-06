@@ -19,52 +19,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:id="@+id/ll_img_wrapper"
+            android:weightSum="3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
 
         <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView"
+            android:id="@+id/iv_img"
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_weight="1"
             app:choseFrom="gallery"
             app:choseType="image"
             app:deletable="true"
-            app:limitedSize="10"
-            app:shapeMode="equalsWidth"/>
+            app:limitedSize="10"/>
 
         <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView1"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            app:choseFrom="camera"
-            app:choseType="image"
-            app:deletable="true"
-            android:visibility="gone"
-            app:limitedSize="10"
-            app:shapeMode="equalsWidth"/>
-
-        <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView3"
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            app:choseFrom="gallery"
-            app:choseType="image"
-            android:visibility="gone"
-            app:deletable="true"
-            app:limitedSize="10"
-            app:shapeMode="equalsWidth"/>
-
-        <com.jyx.myimageview.MultiChosenImageView
-            android:id="@+id/multiChosenImageView4"
+            android:id="@+id/iv_video"
             android:layout_width="0dp"
             android:layout_height="100dp"
             android:layout_weight="1"
             app:choseFrom="gallery"
             app:choseType="video"
             app:deletable="true"
-            app:limitedSize="300"
-            app:shapeMode="equalsWidth"/>
+            app:limitedSize="300"/>
 
     </LinearLayout>
 
