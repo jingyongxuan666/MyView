@@ -33,13 +33,6 @@ public class MultiChosenImageView extends RelativeLayout {
     private OnDeleteClickListener mOnDeleteListener;
 
     /**
-     * 宽高模式
-     */
-    public static final String SHAPE_MODE_NORMAL = "0";//指定宽高
-    public static final String SHAPE_MODE_EQUALS_WIDTH = "1";//边长为宽的正方形
-    public static final String SHAPE_MODE_EQUALS_HEIGHT = "2";//边长为高的正方形
-
-    /**
      * 选择文件的类型
      */
     public static final String CHOSE_TYPE_IMAGE = "0";//图片
@@ -111,7 +104,6 @@ public class MultiChosenImageView extends RelativeLayout {
         //绑定view
         LayoutInflater.from(context).inflate(R.layout.muti_chosen_image_view, this, true);
         ivMain = findViewById(R.id.iv_main);
-//        ivPlay = findViewById(R.id.iv_play);
         ivDelete = findViewById(R.id.iv_delete);
         rlBack = findViewById(R.id.rl_back);
 
