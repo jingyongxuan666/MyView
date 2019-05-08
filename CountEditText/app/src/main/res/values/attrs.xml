@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CountEditText">
+        <!--可输入的总数量-->
+        <attr name="limitedCounts" format="integer"/>
+        <!--剩余文字数量提示信息-->
+        <attr name="leftCountHintText" format="string"/>
+        <!--剩余文字数量提示信息尺寸-->
+        <attr name="leftCountHintTextSize" format="dimension"/>
+        <!--剩余文字数量提示信息颜色-->
+        <attr name="leftCountHintTextColor" format="color"/>
+    </declare-styleable>
+</resources>
