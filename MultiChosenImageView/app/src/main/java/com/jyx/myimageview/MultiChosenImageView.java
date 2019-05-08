@@ -79,7 +79,6 @@ public class MultiChosenImageView extends RelativeLayout {
      */
     private int limitedSize;
 
-    private Uri DATA_URI;
 
     private String FILE_PATH;
 
@@ -278,11 +277,11 @@ public class MultiChosenImageView extends RelativeLayout {
             file.getParentFile().mkdirs();
         }
 
-        DATA_URI = FileProvider.getUriForFile(mContext,mContext.getApplicationContext().getPackageName()+".fileprovider",file);
+        Uri DATA_URI = FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".fileprovider", file);
 
 
         Intent cIntent = new Intent(type);
-        cIntent.putExtra(MediaStore.EXTRA_OUTPUT,DATA_URI);
+        cIntent.putExtra(MediaStore.EXTRA_OUTPUT, DATA_URI);
         ((Activity)mContext).startActivityForResult(cIntent,REQUEST_CODE);
     }
 

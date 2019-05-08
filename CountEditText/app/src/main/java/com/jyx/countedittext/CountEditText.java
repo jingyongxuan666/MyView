@@ -87,9 +87,9 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
         mPaint.setTextAlign(Paint.Align.RIGHT);
         //x轴距离为view宽度减去padding距离
         float x = getWidth() - getPaddingRight();
-        /*ascent为文字baseline到最高字母距离（负数），getBottom为底部长度，
+        /*ascent为文字baseline到最高字母距离（负数），getHeight为控件高度，
         加上getScrollY为了文字超出高度可滚动时，防止剩余文字数量的提示也跟随滚动*/
-        float y = mPaint.ascent() + getBottom() + getScrollY();
+        float y = mPaint.ascent() + getHeight() + getScrollY();
         canvas.drawText(String.format(mLeftHintText,mLeftCount), x, y, mPaint);
     }
 
