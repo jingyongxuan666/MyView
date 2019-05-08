@@ -86,6 +86,7 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
         mPaint.setTextSize(mLeftHintTextSize);
         mPaint.setTextAlign(Paint.Align.RIGHT);
         mPaint.setTypeface(getTypeface());
+        mPaint.setAntiAlias(true);//抗锯齿
         //x轴距离为view宽度减去padding距离
         float x = getWidth() - getPaddingRight();
         /*ascent为文字baseline到最高字母距离（负数），getHeight为控件高度，
