@@ -85,6 +85,7 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
         mPaint.setColor(mLeftHintTextColor);
         mPaint.setTextSize(mLeftHintTextSize);
         mPaint.setTextAlign(Paint.Align.RIGHT);
+        mPaint.setTypeface(getTypeface());
         //x轴距离为view宽度减去padding距离
         float x = getWidth() - getPaddingRight();
         /*ascent为文字baseline到最高字母距离（负数），getHeight为控件高度，
@@ -108,7 +109,9 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
         if (getText() != null) {
             mLeftCount = mLimitedCount - getText().length();
             if (mLeftCount == 0){
-                mOnTextOverLimitedListener.overLimited();
+                if (mOnTextOverLimitedListener != null){
+                    mOnTextOverLimitedListener.overLimited();
+                }
                 return;
             }
             invalidate();
