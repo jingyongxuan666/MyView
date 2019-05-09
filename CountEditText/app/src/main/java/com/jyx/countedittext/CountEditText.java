@@ -22,6 +22,8 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
 
     private OnTextOverLimitedListener mOnTextOverLimitedListener;
 
+    private int mPaddingBottom;
+
     /**
      * 剩余文字数量
      */
@@ -76,7 +78,9 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
         setFilters(new InputFilter[]{new InputFilter.LengthFilter(mLimitedCount)});
         addTextChangedListener(this);
         //防止输入的文字和剩余文字数量提示信息重合，底部需预留空间
-        setPadding(getPaddingLeft(),getPaddingTop(),getPaddingRight(),getPaddingBottom() + mLeftHintTextSize +10 );
+        mPaddingBottom = getPaddingBottom();//获取已设置的paddingBottom
+        int textHeight = (int) ((mLeftHintTextSize + 0.00000007) / 0.7535);//文字高度和textSize的关系
+        setPadding(getPaddingLeft(),getPaddingTop(),getPaddingRight(),mPaddingBottom + textHeight + 10 );
     }
 
     @Override
@@ -90,8 +94,9 @@ public class CountEditText extends AppCompatEditText implements TextWatcher {
         //x轴距离为view宽度减去padding距离
         float x = getWidth() - getPaddingRight();
         /*ascent为文字baseline到最高字母距离（负数），getHeight为控件高度，
-        加上getScrollY为了文字超出高度可滚动时，防止剩余文字数量的提示也跟随滚动*/
-        float y = mPaint.ascent() + getHeight() + getScrollY();
+        加上getScrollY为了文字超出高度可滚动时，防止剩余文字数量的提示也跟随滚动，
+        再减去设置的paddingBottom值*/
+        float y = mPaint.ascent() + getHeight() + getScrollY() - mPaddingBottom;
         canvas.drawText(String.format(mLeftHintText,mLeftCount), x, y, mPaint);
     }
 
