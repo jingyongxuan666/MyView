@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="MultiChosenImageView">
+    <declare-styleable name="MultiTypeImageView">
         <!--选择类型,默认图片-->
         <attr name="choseType" format="enum">
             <!--图片-->

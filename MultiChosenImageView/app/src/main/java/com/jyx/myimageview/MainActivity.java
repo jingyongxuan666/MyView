@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Context mContext;
 
-    private MultiChosenImageView ivImg;
-    private MultiChosenImageView ivVideo;
+    private MultiTypeImageView ivImg;
+    private MultiTypeImageView ivVideo;
     private LinearLayout llImgWrapper;
 
     private LinearLayout.LayoutParams params;
@@ -173,9 +173,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case REQUEST_CODE_IMAGE:
                     //创建新的view
-                    final MultiChosenImageView newImageView = new MultiChosenImageView(mContext);
-                    newImageView.setChoseType(MultiChosenImageView.CHOSE_TYPE_IMAGE)
-                            .setChoseFrom(MultiChosenImageView.CHOSE_FROM_GALLERY)
+                    final MultiTypeImageView newImageView = new MultiTypeImageView(mContext);
+                    newImageView.setChoseType(MultiTypeImageView.CHOSE_TYPE_IMAGE)
+                            .setChoseFrom(MultiTypeImageView.CHOSE_FROM_GALLERY)
                             .setDeletable(true)
                             .setLimitedSize(10)
                             .setOnImageClickListener(new View.OnClickListener() {
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onClick(View v) {
 
                                 }
-                            }).setOnDeleteClickListener(new MultiChosenImageView.OnDeleteClickListener() {
+                            }).setOnDeleteClickListener(new MultiTypeImageView.OnDeleteClickListener() {
                                 @Override
                                 public void deleteCallback(View view) {
                                     llImgWrapper.removeView(newImageView);

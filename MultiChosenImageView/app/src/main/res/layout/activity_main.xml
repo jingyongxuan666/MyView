@@ -28,7 +28,7 @@
 
         </LinearLayout>
 
-        <com.jyx.myimageview.MultiChosenImageView
+        <com.jyx.myimageview.MultiTypeImageView
             android:id="@+id/iv_img"
             android:layout_width="0dp"
             android:layout_height="100dp"
@@ -38,7 +38,7 @@
             app:deletable="true"
             app:limitedSize="10"/>
 
-        <com.jyx.myimageview.MultiChosenImageView
+        <com.jyx.myimageview.MultiTypeImageView
             android:id="@+id/iv_video"
             android:layout_width="0dp"
             android:layout_height="100dp"
