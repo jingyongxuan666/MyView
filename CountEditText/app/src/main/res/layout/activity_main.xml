@@ -16,6 +16,7 @@
         app:leftCountHintTextSize="20sp"
         android:hint="哈哈哈"
         app:leftCountHintText="剩余文字：%d"
+        app:limitedCounts="400"
         app:leftCountHintTextColor="@color/colorAccent"
         app:layout_constraintTop_toTopOf="parent"/>
 

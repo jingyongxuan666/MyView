@@ -27,7 +27,7 @@ public class ImageUtils {
         int angle = readPictureDegree(originpath);
 
         // 把原图压缩后得到Bitmap对象
-        Bitmap bmp =  BitmapFactory.decodeFile(originpath);
+        Bitmap bmp =  getCompressPhoto(originpath);
 
         // 修复图片被旋转的角度
         Bitmap bitmap = rotaingImageView(angle, bmp);
@@ -106,5 +106,14 @@ public class ImageUtils {
         bitmap = ThumbnailUtils.extractThumbnail(bitmap, width, height,
                 ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
         return bitmap;
+    }
+
+    public static Bitmap getCompressPhoto(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = false;
+        options.inSampleSize = 5; // 图片的大小设置为原来的十分之一
+        Bitmap bmp = BitmapFactory.decodeFile(path, options);
+        options = null;
+        return bmp;
     }
 }

@@ -27,7 +27,7 @@ import java.io.File;
  * @author Jingyongxuan
  * @date 2019/4/29
  */
-public class MultiChosenImageView extends RelativeLayout {
+public class MultiTypeImageView extends RelativeLayout {
 
     private Context mContext;
     private OnDeleteClickListener mOnDeleteListener;
@@ -45,11 +45,8 @@ public class MultiChosenImageView extends RelativeLayout {
     public static final String CHOSE_FROM_GALLERY = "1";//相册
     public static final String CHOSE_FROM_BOTH = "2";//皆可
 
-    //四面padding的尺寸
-    private static final int PADDING_SIZE_DP = 10;
 
     private ImageView ivMain;
-    private ImageView ivPlay;
     private ImageView ivDelete;
     private RelativeLayout rlBack;
 
@@ -58,67 +55,66 @@ public class MultiChosenImageView extends RelativeLayout {
      * 要选择的类型
      * 图片或视频
      */
-    private String choseType;
+    private String mChoseType;
     /**
      * 文件来源
      */
-    private String choseFrom;
+    private String mChoseFrom;
 
     /**
      * 是否显示删除图标，默认不显示
      */
-    private boolean deletable;
+    private boolean mDeletable;
 
     /**
      * 默认图片
      */
-    private Drawable defaultImage;
+    private Drawable mDefaultImage;
 
     /**
      * 上传限制
      */
-    private int limitedSize;
+    private int mLimitedSize;
 
 
-    private String FILE_PATH;
+    private String mFilePath;
 
-    private int REQUEST_CODE;
+    private int mRequestCode;
 
-    private String REAL_FROM;
+    private String mRealFrom;
 
-    private File FILE;
+    private File mFile;
 
 
-    public MultiChosenImageView(Context context) {
+    public MultiTypeImageView(Context context) {
         this(context,null);
     }
 
-    public MultiChosenImageView(Context context, AttributeSet attrs) {
+    public MultiTypeImageView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public MultiChosenImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public MultiTypeImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         mContext = context;
         //绑定view
-        LayoutInflater.from(context).inflate(R.layout.muti_chosen_image_view, this, true);
+        LayoutInflater.from(context).inflate(R.layout.multi_type_imageview, this, true);
         ivMain = findViewById(R.id.iv_main);
         ivDelete = findViewById(R.id.iv_delete);
         rlBack = findViewById(R.id.rl_back);
 
-        DpPxUtils.init(context);
         //获取属性
-        TypedArray attribute = context.obtainStyledAttributes(attrs, R.styleable.MultiChosenImageView);
+        TypedArray attribute = context.obtainStyledAttributes(attrs, R.styleable.MultiTypeImageView);
 
-        choseType = attribute.getString(R.styleable.MultiChosenImageView_choseType);
+        mChoseType = attribute.getString(R.styleable.MultiTypeImageView_choseType);
 
-        choseFrom = attribute.getString(R.styleable.MultiChosenImageView_choseFrom);
+        mChoseFrom = attribute.getString(R.styleable.MultiTypeImageView_choseFrom);
 
-        deletable = attribute.getBoolean(R.styleable.MultiChosenImageView_deletable, false);
+        mDeletable = attribute.getBoolean(R.styleable.MultiTypeImageView_deletable, false);
 
-        defaultImage = attribute.getDrawable(R.styleable.MultiChosenImageView_defaultImage);
+        mDefaultImage = attribute.getDrawable(R.styleable.MultiTypeImageView_defaultImage);
 
-        limitedSize = attribute.getInt(R.styleable.MultiChosenImageView_limitedSize, 2048);
+        mLimitedSize = attribute.getInt(R.styleable.MultiTypeImageView_limitedSize, 2048);
 
         setDefaultValue();
 
@@ -126,7 +122,7 @@ public class MultiChosenImageView extends RelativeLayout {
             @Override
             public void onClick(View v) {
                 if (mOnDeleteListener != null){
-                    mOnDeleteListener.deleteCallback(MultiChosenImageView.this);
+                    mOnDeleteListener.deleteCallback(MultiTypeImageView.this);
                 }
                 resetView();
             }
@@ -135,78 +131,82 @@ public class MultiChosenImageView extends RelativeLayout {
 
     }
 
-    public MultiChosenImageView setOnImageClickListener(OnClickListener onClickListener){
+    public MultiTypeImageView setOnImageClickListener(OnClickListener onClickListener){
         ivMain.setOnClickListener(onClickListener);
         return this;
     }
 
+    /**
+     * 重置view
+     */
     private void resetView() {
-        FILE = null;
-        FILE_PATH = null;
-        ivMain.setImageDrawable(defaultImage);
+        mFile = null;
+        mFilePath = null;
+        ivMain.setImageDrawable(mDefaultImage);
         ivDelete.setVisibility(GONE);
         rlBack.setVisibility(GONE);
     }
 
+    /**
+     * 删除后的监听
+     * @param listener
+     */
     public void setOnDeleteClickListener(OnDeleteClickListener listener){
         this.mOnDeleteListener = listener;
     }
+
     public interface OnDeleteClickListener{
         void deleteCallback(View view);
     }
-
-
     /**
      * 设置各属性默认值
      */
     private void setDefaultValue() {
-        if (choseType == null)//默认选择图片
-            choseType = CHOSE_TYPE_IMAGE;
+        if (mChoseType == null)//默认选择图片
+            mChoseType = CHOSE_TYPE_IMAGE;
 
-        if (choseType.equals(CHOSE_TYPE_VIDEO))
+        if (mChoseType.equals(CHOSE_TYPE_VIDEO))
             ivMain.setImageResource(R.drawable.video_upload);
 
-        if (choseFrom == null){//默认从相册选择
-            choseFrom = CHOSE_FROM_GALLERY;
-            REAL_FROM = CHOSE_FROM_GALLERY;
+        if (mChoseFrom == null){//默认从相册选择
+            mChoseFrom = CHOSE_FROM_GALLERY;
+            mRealFrom = CHOSE_FROM_GALLERY;
         }
 
-        if (defaultImage != null){//设置默认图片
-            ivMain.setImageDrawable(defaultImage);
+        if (mDefaultImage != null){//设置默认图片
+            ivMain.setImageDrawable(mDefaultImage);
         }else {
-            int imageId = choseType.equals(CHOSE_TYPE_VIDEO)?R.drawable.video_upload:R.drawable.image_upload;
-            defaultImage = mContext.getResources().getDrawable(imageId);
+            int imageId = mChoseType.equals(CHOSE_TYPE_VIDEO)?R.drawable.video_upload:R.drawable.image_upload;
+            mDefaultImage = mContext.getResources().getDrawable(imageId);
         }
 
     }
 
-    public MultiChosenImageView setChoseType(String choseType){
-        this.choseType = choseType;
+    public MultiTypeImageView setChoseType(String choseType){
+        this.mChoseType = choseType;
         return this;
     }
 
-    public MultiChosenImageView setChoseFrom(String where){
-        this.choseFrom = where;
-        REAL_FROM = where;
+    public MultiTypeImageView setChoseFrom(String where){
+        this.mChoseFrom = where;
+        mRealFrom = where;
         return this;
     }
 
-    public MultiChosenImageView setDefaultImage(@DrawableRes int resourceId){
-        this.defaultImage = mContext.getResources().getDrawable(resourceId);
+    public MultiTypeImageView setDefaultImage(@DrawableRes int resourceId){
+        this.mDefaultImage = mContext.getResources().getDrawable(resourceId);
         return this;
     }
 
-    public MultiChosenImageView setDeletable(boolean canDelete){
-        this.deletable = canDelete;
+    public MultiTypeImageView setDeletable(boolean canDelete){
+        this.mDeletable = canDelete;
         return this;
     }
 
-    public MultiChosenImageView setLimitedSize(int limitedSize){
-        this.limitedSize = limitedSize;
+    public MultiTypeImageView setLimitedSize(int limitedSize){
+        this.mLimitedSize = limitedSize;
         return this;
     }
-
-
 
     /**
      *
@@ -215,10 +215,10 @@ public class MultiChosenImageView extends RelativeLayout {
      * @param
      */
     public void choseFile(int requestCode) {
-        REQUEST_CODE = requestCode;
-        if (choseFrom.equals(CHOSE_FROM_CAMERA)){//打开相机
+        mRequestCode = requestCode;
+        if (mChoseFrom.equals(CHOSE_FROM_CAMERA)){//打开相机
             openCamera();
-        }else if (choseFrom.equals(CHOSE_FROM_GALLERY)){//打开图库
+        }else if (mChoseFrom.equals(CHOSE_FROM_GALLERY)){//打开图库
             openGallery();
         }else{//显示dialog，来选择图库或相机
             new AlertDialog.Builder(mContext)
@@ -243,34 +243,34 @@ public class MultiChosenImageView extends RelativeLayout {
      * 从相册获取
      */
     private void openGallery() {
-        REAL_FROM = CHOSE_FROM_GALLERY;
+        mRealFrom = CHOSE_FROM_GALLERY;
         Uri type;
-        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+        if (mChoseType.equals(CHOSE_TYPE_VIDEO)){
             type = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
         }else {
             type = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         }
         Intent cIntent = new Intent(Intent.ACTION_PICK,type);
-        ((Activity)mContext).startActivityForResult(cIntent,REQUEST_CODE);
+        ((Activity)mContext).startActivityForResult(cIntent,mRequestCode);
     }
 
     /**
      * 打开相机
      */
     private void openCamera() {
-        REAL_FROM = CHOSE_FROM_CAMERA;
+        mRealFrom = CHOSE_FROM_CAMERA;
         String path = mContext.getFilesDir() + File.separator + "media" + File.separator;
         String type;
         File file;
         long time = System.currentTimeMillis();
-        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+        if (mChoseType.equals(CHOSE_TYPE_VIDEO)){
             type = MediaStore.ACTION_VIDEO_CAPTURE;
             file = new File(path,time+".mp4");
-            FILE_PATH = path + time + ".mp4";
+            mFilePath = path + time + ".mp4";
         }else {
             type = MediaStore.ACTION_IMAGE_CAPTURE;
             file = new File(path,time+".jpg");
-            FILE_PATH = path + time + ".jpg";
+            mFilePath = path + time + ".jpg";
         }
 
         if (!file.getParentFile().exists()){
@@ -282,32 +282,32 @@ public class MultiChosenImageView extends RelativeLayout {
 
         Intent cIntent = new Intent(type);
         cIntent.putExtra(MediaStore.EXTRA_OUTPUT, DATA_URI);
-        ((Activity)mContext).startActivityForResult(cIntent,REQUEST_CODE);
+        ((Activity)mContext).startActivityForResult(cIntent,mRequestCode);
     }
 
     public void handleData(Intent data){
 
-        FILE = null;
+        mFile = null;
         String path;
         Bitmap thumbnail;
 
-        if (REAL_FROM.equals(CHOSE_FROM_CAMERA)){
-            //相机拍照返回的data有可能是null，所以使用全局的FILE_PATH
-            path = FILE_PATH;
+        if (mRealFrom.equals(CHOSE_FROM_CAMERA)){
+            //相机拍照返回的data有可能是null，所以使用全局的mFilePath
+            path = mFilePath;
         }else {
             //通过uri获取文件路径
             path = GalleryUtils.getRealPathFromURI((Activity) mContext,data.getData());
         }
-        FILE = new File(path);
-        double fileSize = FILE.length()/(1024*1024);
-        if (fileSize > limitedSize){
-            String type = choseType.equals(CHOSE_TYPE_VIDEO)?"所选视频":"所选图片";
-            Toast.makeText(mContext,type+"不能大于"+limitedSize+"m",Toast.LENGTH_SHORT).show();
+        mFile = new File(path);
+        double fileSize = mFile.length()/(1024*1024);
+        if (fileSize > mLimitedSize){
+            String type = mChoseType.equals(CHOSE_TYPE_VIDEO)?"所选视频":"所选图片";
+            Toast.makeText(mContext,type+"不能大于"+mLimitedSize+"m",Toast.LENGTH_SHORT).show();
             return;
         }
 
 
-        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+        if (mChoseType.equals(CHOSE_TYPE_VIDEO)){
             thumbnail = ImageUtils.getVideoThumbnail(path,200,200, MediaStore.Images.Thumbnails.MICRO_KIND);
         }else {
             thumbnail = ImageUtils.returnRotatePhoto(path,mContext);
@@ -316,13 +316,13 @@ public class MultiChosenImageView extends RelativeLayout {
         ivMain.setImageBitmap(thumbnail);
 
         //如果是视频，显示蒙版和播放键，否则隐藏
-        if (choseType.equals(CHOSE_TYPE_VIDEO)){
+        if (mChoseType.equals(CHOSE_TYPE_VIDEO)){
             rlBack.setVisibility(VISIBLE);
         }else {
             rlBack.setVisibility(GONE);
         }
         //是否显示删除icon
-        if (deletable){
+        if (mDeletable){
             ivDelete.setVisibility(VISIBLE);
         }else {
             ivDelete.setVisibility(GONE);
@@ -334,6 +334,6 @@ public class MultiChosenImageView extends RelativeLayout {
      * @return 获取图片或视频文件
      */
     public File getFile(){
-        return FILE;
+        return mFile;
     }
 }
