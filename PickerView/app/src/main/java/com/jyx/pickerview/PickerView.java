@@ -38,7 +38,7 @@ public class PickerView extends View{
         private float mMinTextSize = 10;
 
         private float mMaxTextAlpha = 255;
-        private float mMinTextAlpha = 120;
+        private float mMinTextAlpha = 80;
 
         private int mColorText = 0x333333;
 
@@ -187,8 +187,8 @@ public class PickerView extends View{
             Paint.FontMetricsInt fmi = mPaint.getFontMetricsInt();
             float baseline = (float) (y - (fmi.bottom / 2.0 + fmi.top / 2.0));
 
-            int indexs = mCurrentSelected;
-            String textData = mDataList.get(indexs).getShowContent();
+            int index = mCurrentSelected;
+            String textData = mDataList.get(index).getShowContent();
             canvas.drawText(textData, x, baseline, mPaint);
 
             // 绘制上方data
@@ -209,7 +209,7 @@ public class PickerView extends View{
          *            1表示向下绘制，-1表示向上绘制
          */
         private void drawOtherText(Canvas canvas, int position, int type) {
-            float d = (float) (MARGIN_ALPHA * mMinTextSize * position + type
+            float d = (float) (MARGIN_ALPHA * (mMinTextSize+1) * position + type
                     * mMoveLen);
             float scale = parabola(mViewHeight / 4.0f, d);
             float size = (mMaxTextSize - mMinTextSize) * scale + mMinTextSize;
