@@ -33,13 +33,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        pickerView.setOnConfirmClickListener(new View.OnClickListener() {
+        pickerView.setOnConfirmListener(new BasePickerView.OnConfirmListener() {
             @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this,pickerView.getSelectedContent(),Toast.LENGTH_SHORT).show();
+            public void OnConfirm(String selected) {
+                Toast.makeText(MainActivity.this,selected,Toast.LENGTH_SHORT).show();
             }
         });
-
 //        cityPickerView.setOnConfirmClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {

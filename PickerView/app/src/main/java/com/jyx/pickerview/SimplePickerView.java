@@ -53,10 +53,9 @@ public class SimplePickerView extends BasePickerView {
         pickerView.setSelected(0);
     }
 
-    public String getSelectedContent(){
+    @Override
+    protected String getSelectedContent() {
         return selectedContent;
     }
-
-
 
 }

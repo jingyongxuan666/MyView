@@ -69,9 +69,9 @@ public class CityPickerView extends BasePickerView {
         });
     }
 
-    public String getSelectedContent(){
-        return selectedProvince+" "+selectedMunicipality;
+    @Override
+    protected String getSelectedContent() {
+        return selectedProvince +" "+ selectedMunicipality;
     }
-
 
 }

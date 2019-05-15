@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -27,6 +28,7 @@ public abstract class BasePickerView {
 
     private TextView tvCancel;
     private OnDismissListener onDismissListener;
+    private OnConfirmListener onConfirmListener;
 
     public BasePickerView(Context context) {
         this.mContext = context;
@@ -64,9 +66,20 @@ public abstract class BasePickerView {
             }
         });
 
+        tvConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(onConfirmListener!=null){
+                    onConfirmListener.OnConfirm(getSelectedContent());
+                }
+            }
+        });
+
         initPickerView(mContext,linearLayout);
 
     }
+
+    protected abstract String getSelectedContent();
 
     public abstract void initPickerView(Context context,LinearLayout target);
 
@@ -99,23 +112,32 @@ public abstract class BasePickerView {
 
     public void showPickerView(){
         setWindowAlpha(true);
+        InputMethodManager imm = (InputMethodManager) mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (((Activity)mContext).getCurrentFocus()!=null){
+            if (imm.isActive(((Activity)mContext).getCurrentFocus())){//如果软键盘正显示，隐藏掉
+                imm.hideSoftInputFromWindow(((Activity)mContext)
+                        .getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
+            }
+        }
         popupWindow.showAtLocation(parent, Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL,0,0);
     }
-
-    public void setOnConfirmClickListener(View.OnClickListener clickListener){
-        tvConfirm.setOnClickListener(clickListener);
-    }
-
+    /**
+     * 点击取消的回调
+     */
     public void setOnDismissListener(OnDismissListener onDismissListener){
         this.onDismissListener = onDismissListener;
     }
-
-    public void setOnDismissListener(View.OnClickListener clickListener){
-        tvCancel.setOnClickListener(clickListener);
-    }
-
     public interface OnDismissListener{
         void onDismiss();
+    }
+    /**
+     * 点击确定的回调
+     */
+    public void setOnConfirmListener(OnConfirmListener onConfirmListener){
+        this.onConfirmListener = onConfirmListener;
+    }
+    public interface OnConfirmListener{
+        void OnConfirm(String selected);
     }
 
 
