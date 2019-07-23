@@ -9,16 +9,16 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MyBarrageView barrageView;
+    private BarrageView barrageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         barrageView = findViewById(R.id.my_bar);
         final List<String> list = new ArrayList<>();
-        list.add("1.哈哈哈哈");
-        list.add("2.很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的弹幕");
-        list.add("3.2333");
+        list.add("1.哈哈哈");
+        list.add("2.很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长很长的弹幕");
+        list.add("3.在座的都是垃圾");
         list.add("4.gkd");
         list.add("5.嚯嚯嚯");
         list.add("6.不错不错");
@@ -28,11 +28,33 @@ public class MainActivity extends AppCompatActivity {
         list.add("10.关注了关注了");
         list.add("11.很到位");
 
+        MyAdapter adapter = new MyAdapter(this);
+        adapter.setData(list);
+        barrageView.setAdapter(adapter);
+        barrageView.allowRepeat(true);
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                barrageView.setList(list);
+
+                barrageView.startBarrage();
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        barrageView.stop();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        barrageView.startBarrage();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }

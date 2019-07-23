@@ -1,10 +1,7 @@
 package com.jyx.barrageview;
 
 import android.animation.ObjectAnimator;
-import android.content.Context;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 
 public class AnimationHelper {
 

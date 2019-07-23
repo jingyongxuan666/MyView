@@ -12,7 +12,7 @@
 <!--            android:layout_height="match_parent"-->
 <!--            android:id="@+id/barrageView"/>-->
 
-    <com.jyx.barrageview.MyBarrageView
+    <com.jyx.barrageview.BarrageView
             android:id="@+id/my_bar"
             android:layout_width="match_parent"
             android:layout_height="200dp"/>
@@ -23,4 +23,5 @@
         android:text="开始"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
+
 </RelativeLayout>
